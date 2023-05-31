@@ -10,7 +10,7 @@ class WeatherApi {
     final locationUrl = Uri.parse("$baseLocationUrl//search?name=$city&count=1");
     final locationResponse = await http.get(locationUrl);
     if (locationResponse.statusCode != 200) {
-      throw Exception("Could not find location for city $city");
+      throw WeatherApiException("Could not find location for city $city");
     }
     final locationJson = jsonDecode(locationResponse.body);
     final locations = locationJson["results"] as List;
@@ -25,7 +25,7 @@ class WeatherApi {
         "$baseWeatherUrl/forecast?latitude=${lat.toStringAsFixed(2)}&longitude=${long.toStringAsFixed(2)}&hourly=temperature_2m&daily=weathercode,temperature_2m_max,temperature_2m_min&forecast_days=1&timezone=auto");
     final weatherResponse = await http.get(weatherUrl);
     if (weatherResponse.statusCode != 200) {
-      throw Exception("Error getting weather for lat: $lat and long: $long");
+      throw WeatherApiException("Error getting weather for lat: $lat and long: $long");
     }
     final weatherJson = jsonDecode(weatherResponse.body);
 
@@ -71,4 +71,10 @@ class WeatherApi {
     };
     return description;
   }
+}
+
+class WeatherApiException implements Exception {
+  WeatherApiException(this.message);
+
+  String message;
 }
